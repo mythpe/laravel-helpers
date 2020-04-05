@@ -1,0 +1,38 @@
+{
+  "name": "4myth/laravel-helpers",
+  "type": "library",
+  "description": "laravel helpers",
+  "keywords": [
+    "Myth",
+    "4myth",
+    "laravel",
+    "helpers"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ahmed Fayez",
+      "email": "mythpe@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "laravel/framework": ">=5.5"
+  },
+  "require-dev": {},
+  "autoload": {
+    "psr-4": {
+      "Myth\\Support\\": "src/"
+    },
+    "files": [
+      "src/Helpers/Functions.php"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": []
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
