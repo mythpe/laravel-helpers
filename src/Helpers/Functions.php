@@ -39,7 +39,7 @@ if(!function_exists('ends_with')){
      */
     function ends_with($haystack, $needles)
     {
-        return Str::endsWith($haystack, $needles);
+        return \Illuminate\Support\Str::endsWith($haystack, $needles);
     }
 }
 
@@ -52,7 +52,7 @@ if(!function_exists('starts_with')){
      */
     function starts_with($haystack, $needles)
     {
-        return Str::startsWith($haystack, $needles);
+        return \Illuminate\Support\Str::startsWith($haystack, $needles);
     }
 }
 
