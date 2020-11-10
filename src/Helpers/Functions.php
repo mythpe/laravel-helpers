@@ -262,3 +262,30 @@ if (!function_exists('date_by_locale')) {
         return $date ? $date : "";
     }
 }
+
+if (!function_exists('manifest_directory')) {
+    function manifest_directory($path = null)
+    {
+        $directory = rtrim(config('app.manifest_directory'), '/');
+        if (!is_null($path)) {
+            $directory .= '/' . ltrim($path, '/');
+        }
+        return $directory;
+    }
+}
+
+if (!function_exists('trans_has')) {
+    /**
+     * Determine if a translation exists.
+     *
+     * @param string $key
+     * @param string|null $locale
+     * @param bool $fallback
+     *
+     * @return bool
+     */
+    function trans_has($key, $locale = null, $fallback = true)
+    {
+        return app('translator')->has($key, $locale, $fallback);
+    }
+}
