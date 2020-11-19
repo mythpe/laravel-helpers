@@ -1,7 +1,7 @@
 <?php
 /**
  * Copyright MyTh
- * Website: https://4MyTh.com
+ * Website: www.4MyTh.com
  * Email: mythpe@gmail.com
  * Copyright © 2006-2020 MyTh All rights reserved.
  */
@@ -287,5 +287,82 @@ if (!function_exists('trans_has')) {
     function trans_has($key, $locale = null, $fallback = true)
     {
         return app('translator')->has($key, $locale, $fallback);
+    }
+}
+
+if (!function_exists('hijri')) {
+    /**
+     * helper convert to hijri
+     *
+     * @param string $date
+     *
+     * @return \GeniusTS\HijriDate\Date
+     */
+    function hijri($date = '')
+    {
+        if ($date instanceof \GeniusTS\HijriDate\Date)
+            return $date;
+        if (!$date instanceof \Illuminate\Support\Carbon) {
+            $temp = \Illuminate\Support\Carbon::make($date);
+
+            # Hijri
+            if ($temp->year < 1990) {
+                $ex = explode("-", $date);
+                count($ex) < 3 && ($ex = explode("/", $date));
+
+                $year = $temp->year;
+                $month = isset($ex[1]) && strlen($ex[1]) == 2 ? $ex[1] : 1;
+                $day = strpos("$date", "$year") === 0 && isset($ex[2]) ? $ex[2] : 1;
+
+                $date = \GeniusTS\HijriDate\Hijri::convertToGregorian($day, $month, $year);
+            }
+            else {
+                $date = $temp;
+            }
+        }
+
+        return \GeniusTS\HijriDate\Hijri::convertToHijri($date);
+    }
+}
+
+if (!function_exists('arabic_date')) {
+    /**
+     * @param $string
+     * @param bool $prefix
+     *
+     * @return string
+     */
+    function arabic_date($string, $prefix = false)
+    {
+        $ar = [
+            '/',
+            '٠',
+            '١',
+            '٢',
+            '٣',
+            '٤',
+            '٥',
+            '٦',
+            '٧',
+            '٨',
+            '٩',
+        ];
+
+        $notAr = [
+            '-',
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+        ];
+
+        $val = str_ireplace($notAr, $ar, $string);
+        return (string) ($val . ($prefix ? " هـ" : ''));
     }
 }
