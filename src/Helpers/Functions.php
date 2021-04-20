@@ -67,6 +67,11 @@ if (!function_exists('d')) {
      */
     function d(...$vars)
     {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: *');
+        header('Access-Control-Allow-Headers: *');
+        http_response_code(500);
+
         $debug = @debug_backtrace();
         $call = current($debug);
         $line = (isset($call['line']) ? $call['line'] : __LINE__);
