@@ -16,18 +16,18 @@ if (!function_exists('to_number_format')) {
      *
      * @return string
      */
-    function to_number_format($number = '', $decimals = 0, $currency = null)
+    function to_number_format($number = '', $decimals = 2, $currency = null)
     {
         $dec_point = '.';
         $thousands_sep = ',';
         $v = number_format((float) $number, (int) $decimals, $dec_point, $thousands_sep);
-        $temp = explode('.', $v);
-        $temp[0] = isset($temp[0]) ? $temp[0] : 0;
-        $temp[1] = isset($temp[1]) ? $temp[1] : 0;
-        $args[0] = $temp[0];
-        $res = "{$temp[0]}" . (intval($temp[1]) > 0 ? ".{$temp[1]}" : '');
+        //$temp = explode('.', $v);
+        //$temp[0] = isset($temp[0]) ? $temp[0] : 0;
+        //$temp[1] = isset($temp[1]) ? $temp[1] : 0;
+        //$args[0] = $temp[0];
+        //$res = "{$temp[0]}" . (intval($temp[1]) > 0 ? ".{$temp[1]}" : '');
 
-        return $res . ($currency ? " {$currency}" : '');
+        return $v . ($currency ? " {$currency}" : '');
     }
 }
 
@@ -253,18 +253,15 @@ if (!function_exists('date_by_locale')) {
         ];
 
         try {
-            if (!$date) return $date;
-            $date = str_ireplace($toLocale === 'ar' ? $notAr : $ar, $toLocale === 'ar' ? $ar : $notAr, $date);
-
-            return $date;
+            return str_ireplace($toLocale === 'ar' ? $notAr : $ar, $toLocale === 'ar' ? $ar : $notAr, $date);
         }
         catch (Exception $exception) {
-            if (config('app.debug')) {
-                d($exception);
-            }
+            //if (config('app.debug')) {
+            //    d($exception);
+            //}
         }
 
-        return $date ? $date : "";
+        return $date;
     }
 }
 
