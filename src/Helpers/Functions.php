@@ -6,6 +6,13 @@
  * Website: https://www.4myth.com
  */
 
+use App\Http\Middleware\PermissionMiddleware;
+use GeniusTS\HijriDate\Date;
+use GeniusTS\HijriDate\Hijri;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route as Router;
+use Illuminate\Support\Str;
 use Symfony\Component\VarDumper\VarDumper;
 
 if(!function_exists('to_number_format')){
@@ -42,7 +49,7 @@ if(!function_exists('ends_with')){
      */
     function ends_with($haystack, $needles)
     {
-        return \Illuminate\Support\Str::endsWith($haystack, $needles);
+        return Str::endsWith($haystack, $needles);
     }
 }
 
@@ -57,7 +64,7 @@ if(!function_exists('starts_with')){
      */
     function starts_with($haystack, $needles)
     {
-        return \Illuminate\Support\Str::startsWith($haystack, $needles);
+        return Str::startsWith($haystack, $needles);
     }
 }
 
@@ -91,7 +98,7 @@ if(!function_exists('locale_attribute')){
      * Get attribute by locale
      *
      * @param string $attribute
-     * @param null $locale
+     * @param string|null $locale
      *
      * @return string
      * @uses app()->getLocale()
@@ -302,11 +309,11 @@ if(!function_exists('hijri')){
      */
     function hijri($date = '')
     {
-        if($date instanceof \GeniusTS\HijriDate\Date){
+        if($date instanceof Date){
             return $date;
         }
-        if(!$date instanceof \Illuminate\Support\Carbon){
-            $temp = \Illuminate\Support\Carbon::make($date);
+        if(!$date instanceof Carbon){
+            $temp = Carbon::make($date);
 
             # Hijri
             if($temp->year < 1990){
@@ -317,25 +324,25 @@ if(!function_exists('hijri')){
                 $month = isset($ex[1]) && strlen($ex[1]) == 2 ? $ex[1] : 1;
                 $day = strpos("$date", "$year") === 0 && isset($ex[2]) ? $ex[2] : 1;
 
-                $date = \GeniusTS\HijriDate\Hijri::convertToGregorian($day, $month, $year);
+                $date = Hijri::convertToGregorian($day, $month, $year);
             }
             else{
                 $date = $temp;
             }
         }
 
-        return \GeniusTS\HijriDate\Hijri::convertToHijri($date);
+        return Hijri::convertToHijri($date);
     }
 }
 
 if(!function_exists('arabic_date')){
     /**
      * @param $string
-     * @param bool $prefix
+     * @param string|null|bool $append
      *
      * @return string
      */
-    function arabic_date($string, $prefix = false)
+    function arabic_date($string, $append = null)
     {
         $ar = [
             '/',
@@ -366,6 +373,166 @@ if(!function_exists('arabic_date')){
         ];
 
         $val = str_ireplace($notAr, $ar, $string);
-        return $val.($prefix ? " هـ" : '');
+        return $val.($append ? ($append == !0 ? " هـ" : $append) : '');
+    }
+}
+
+if(!function_exists('isBase64')){
+    /**
+     * Check if string is image base64
+     *
+     * @param $str
+     *
+     * @return bool
+     */
+    function isBase64($str)
+    {
+        return strpos($str, ';base64') !== false || base64_encode(base64_decode($str, true)) === $str;
+    }
+}
+
+if(!function_exists('appName')){
+    /**
+     * Setting app name
+     *
+     * @param string|null $locale
+     *
+     * @return string
+     */
+    function appName($locale = null)
+    {
+        return (string) setting(locale_attribute('app_name', $locale));
+    }
+}
+
+if(!function_exists('encodeId')){
+    /**
+     * Encode id
+     *
+     * @param $id
+     *
+     * @return string
+     */
+    function encodeId($id)
+    {
+        return md5("MyTh").base64_encode($id).md5("Ahmed");
+    }
+}
+
+if(!function_exists('decodeId')){
+    /**
+     * Encode id
+     *
+     * @param $encode
+     *
+     * @return false|string
+     */
+    function decodeId($encode)
+    {
+        $first = md5("MyTh");
+        $last = md5("Ahmed");
+        $id = str_ireplace($first, '', $encode);
+        $id = str_ireplace($last, '', $id);
+        return base64_decode($id);
+    }
+}
+
+if(!function_exists('downloadMedia')){
+    /**
+     * Get Route url for media library
+     *
+     * @param \Spatie\MediaLibrary\MediaCollections\Models\Media|\Illuminate\Database\Eloquent\Model|string|int $media
+     * @param string $routeName
+     *
+     * @return string
+     * @uses route
+     * @uses \Illuminate\Database\Eloquent\Model
+     * @uses \Spatie\MediaLibrary\MediaCollections\Models\Media
+     */
+    function downloadMedia($media, string $routeName = 'Static.downloadMedia')
+    {
+        $id = $media instanceof Model ? $media->id : $media;
+        return $media ? route($routeName, encodeId($id)) : null;
+    }
+}
+
+if(!function_exists('front_end_url')){
+    /**
+     *  Front end url helper
+     *
+     * @param string|null $prefix
+     *
+     * @return string
+     */
+    function front_end_url(string $prefix = null)
+    {
+        $url = config('config.front_end_url', '');
+
+        $url = rtrim($url, '/');
+
+        if($prefix){
+            $url .= "/".ltrim($prefix, '/');
+        }
+        return $url;
+    }
+}
+
+if(!function_exists('getPermissionRoutes')){
+    /**
+     * Get list of auth-routes has permission
+     *
+     * @param false $asCode
+     *
+     * @return array|null
+     */
+    function getPermissionRoutes(bool $asCode = false)
+    {
+        /** @var \Illuminate\Routing\Route[] $routes */
+        $routes = Router::getRoutes();
+        $auth = [];
+        $codes = [];
+        foreach($routes as $route){
+            $name = $route->getName() ?: '';
+            $code = $name;
+            if(Str::endsWith($name, PermissionMiddleware::SKIP_ENDS_WITH)){
+                continue;
+            }
+            $action = $route->getAction();
+            $middlewares = ($action['middleware'] ?? []);
+            if(!in_array('permission', $middlewares)){
+                continue;
+            }
+
+            $hasAuth = !1;
+            foreach($middlewares as $middleware){
+                if(Str::contains($middleware, 'auth:')){
+                    $hasAuth = !0;
+                    break;
+                }
+            }
+            if(!$hasAuth){
+                continue;
+            }
+
+            // $generalRouteName = Str::afterLast($name, '.');
+            //d($action, $generalRouteName,get_class($route),$route->getName());
+            //d($generalRouteName);
+            //d($code, $name);
+            // if(in_array($generalRouteName, $only)){
+            //     $code = PermissionMiddleware::routeCode($name, $generalRouteName);
+            //     $name = PermissionMiddleware::routeName($name, $generalRouteName);
+            // }
+
+            if(!array_key_exists($code, $auth)){
+                $auth[$code] = [
+                    'name' => $name,
+                    'code' => $code,
+                ];
+                $codes[] = $code;
+            }
+        }
+        ksort($auth);
+
+        return $asCode ? $codes : $auth;
     }
 }
