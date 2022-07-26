@@ -1,20 +1,20 @@
 <?php
-/**
- * Copyright MyTh
- * Website: www.4MyTh.com
+/*
+ * MyTh Ahmed Faiz Copyright © 2016-2022 All rights reserved.
  * Email: mythpe@gmail.com
- * Copyright © 2006-2020 MyTh All rights reserved.
+ * Mobile: +966590470092
+ * Website: https://www.4myth.com
  */
 
 use Symfony\Component\VarDumper\VarDumper;
 
-if (!function_exists('to_number_format')) {
+if(!function_exists('to_number_format')){
     /**
-     * @param  string|int|float  $number
-     * @param  int  $decimals
-     * @param  string  $currency
-     * @param  string  $thousands_sep
-     * @param  string  $dec_point
+     * @param string|int|float $number
+     * @param int $decimals
+     * @param string $currency
+     * @param string $thousands_sep
+     * @param string $dec_point
      *
      * @return string
      */
@@ -31,12 +31,12 @@ if (!function_exists('to_number_format')) {
     }
 }
 
-if (!function_exists('ends_with')) {
+if(!function_exists('ends_with')){
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|array  $needles
+     * @param string $haystack
+     * @param string|array $needles
      *
      * @return bool
      */
@@ -46,12 +46,12 @@ if (!function_exists('ends_with')) {
     }
 }
 
-if (!function_exists('starts_with')) {
+if(!function_exists('starts_with')){
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param  string  $haystack
-     * @param  string|array  $needles
+     * @param string $haystack
+     * @param string|array $needles
      *
      * @return bool
      */
@@ -61,9 +61,9 @@ if (!function_exists('starts_with')) {
     }
 }
 
-if (!function_exists('d')) {
+if(!function_exists('d')){
     /**
-     * @param  mixed  ...$vars
+     * @param mixed ...$vars
      */
     function d(...$vars)
     {
@@ -78,7 +78,7 @@ if (!function_exists('d')) {
         $file = (isset($call['file']) ? $call['file'] : __FILE__);
 
         echo("[{$file}] Line ({$line}): <br>");
-        foreach ($vars as $v) {
+        foreach($vars as $v){
             VarDumper::dump($v);
         }
 
@@ -86,40 +86,42 @@ if (!function_exists('d')) {
     }
 }
 
-if (!function_exists('locale_attribute')) {
+if(!function_exists('locale_attribute')){
     /**
-     * get attribute by locale
+     * Get attribute by locale
      *
-     * @param  string  $attribute
+     * @param string $attribute
+     * @param null $locale
      *
      * @return string
      * @uses app()->getLocale()
      */
-    function locale_attribute($attribute = "name")
+    function locale_attribute($attribute = "name", $locale = null)
     {
-        return (string) rtrim($attribute, '_')."_".app()->getLocale();
+        is_null($locale) && ($locale = app()->getLocale());
+        return rtrim($attribute, '_')."_".$locale;
     }
 }
 
-if (!function_exists('str_replace_en_ar')) {
+if(!function_exists('str_replace_en_ar')){
     /**
      * Replace string for AR & EN
      *
-     * @param  string  $string
+     * @param string $string
      *
      * @return string
      */
-    function str_replace_en_ar($string = '')
+    function str_replace_en_ar(string $string = '')
     {
         return str_replace_name_ar(str_replace_name_en($string));
     }
 }
 
-if (!function_exists('str_replace_name_ar')) {
+if(!function_exists('str_replace_name_ar')){
     /**
      * Replace string for AR Name
      *
-     * @param  string  $string
+     * @param string $string
      *
      * @return string
      */
@@ -127,41 +129,37 @@ if (!function_exists('str_replace_name_ar')) {
     {
         $string = str_ireplace(['إ', 'أ'], 'ا', $string);
         $string = str_ireplace("عبدال", 'عبد ال', $string);
-        $string = trim($string);
-
-        return "".$string;
+        return trim($string);
     }
 }
 
-if (!function_exists('str_replace_name_en')) {
+if(!function_exists('str_replace_name_en')){
     /**
      * Replace string for EN Name
      *
-     * @param  string  $string
+     * @param string $string
      *
      * @return string
      */
     function str_replace_name_en($string = '')
     {
         $string = trim($string);
-        $string = ucwords($string);
-
-        return "".$string;
+        return ucwords($string);
     }
 }
 
-if (!function_exists('date_by_locale')) {
+if(!function_exists('date_by_locale')){
     /**
      * Convert date By locale
      *
      * @param $date
-     * @param  null  $toLocale
+     * @param null $toLocale
      *
      * @return mixed|string
      */
     function date_by_locale($date, $toLocale = null)
     {
-        if (is_null($toLocale)) {
+        if(is_null($toLocale)){
             $toLocale = app()->getLocale();
         }
 
@@ -254,9 +252,10 @@ if (!function_exists('date_by_locale')) {
             "Dec",
         ];
 
-        try {
+        try{
             return str_ireplace($toLocale === 'ar' ? $notAr : $ar, $toLocale === 'ar' ? $ar : $notAr, $date);
-        } catch (Exception $exception) {
+        }
+        catch(Exception $exception){
             //if (config('app.debug')) {
             //    d($exception);
             //}
@@ -266,24 +265,24 @@ if (!function_exists('date_by_locale')) {
     }
 }
 
-if (!function_exists('manifest_directory')) {
+if(!function_exists('manifest_directory')){
     function manifest_directory($path = null)
     {
         $directory = rtrim(config('app.manifest_directory'), '/');
-        if (!is_null($path)) {
+        if(!is_null($path)){
             $directory .= '/'.ltrim($path, '/');
         }
         return $directory;
     }
 }
 
-if (!function_exists('trans_has')) {
+if(!function_exists('trans_has')){
     /**
      * Determine if a translation exists.
      *
-     * @param  string  $key
-     * @param  string|null  $locale
-     * @param  bool  $fallback
+     * @param string $key
+     * @param string|null $locale
+     * @param bool $fallback
      *
      * @return bool
      */
@@ -293,24 +292,24 @@ if (!function_exists('trans_has')) {
     }
 }
 
-if (!function_exists('hijri')) {
+if(!function_exists('hijri')){
     /**
      * helper convert to hijri
      *
-     * @param  string  $date
+     * @param string $date
      *
      * @return \GeniusTS\HijriDate\Date
      */
     function hijri($date = '')
     {
-        if ($date instanceof \GeniusTS\HijriDate\Date) {
+        if($date instanceof \GeniusTS\HijriDate\Date){
             return $date;
         }
-        if (!$date instanceof \Illuminate\Support\Carbon) {
+        if(!$date instanceof \Illuminate\Support\Carbon){
             $temp = \Illuminate\Support\Carbon::make($date);
 
             # Hijri
-            if ($temp->year < 1990) {
+            if($temp->year < 1990){
                 $ex = explode("-", $date);
                 count($ex) < 3 && ($ex = explode("/", $date));
 
@@ -319,7 +318,8 @@ if (!function_exists('hijri')) {
                 $day = strpos("$date", "$year") === 0 && isset($ex[2]) ? $ex[2] : 1;
 
                 $date = \GeniusTS\HijriDate\Hijri::convertToGregorian($day, $month, $year);
-            } else {
+            }
+            else{
                 $date = $temp;
             }
         }
@@ -328,10 +328,10 @@ if (!function_exists('hijri')) {
     }
 }
 
-if (!function_exists('arabic_date')) {
+if(!function_exists('arabic_date')){
     /**
      * @param $string
-     * @param  bool  $prefix
+     * @param bool $prefix
      *
      * @return string
      */
@@ -366,6 +366,6 @@ if (!function_exists('arabic_date')) {
         ];
 
         $val = str_ireplace($notAr, $ar, $string);
-        return (string) ($val.($prefix ? " هـ" : ''));
+        return $val.($prefix ? " هـ" : '');
     }
 }
